@@ -1,4 +1,4 @@
-# GridLiquid2D
+# AnisoFLIP
 ## Overview
 ![demo](docs/images/demo.gif)
 
@@ -9,6 +9,8 @@ This repo was developed in the following environment:
 * Windows 10 64-bit
 * Microsoft Visual Studio 2019 on x64 platform (C++14)
 * CMake 3.19.0
+* GridLiquid 2.0.1
+* DXViewer 3.1.0
 
 You should update submodules before creating a project with cmake.
 
