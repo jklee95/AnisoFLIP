@@ -13,6 +13,12 @@ public:
 		std::vector<DirectX::XMFLOAT2>& gridPos,
 		std::vector<STATE>& gridState) = 0;
 
+	virtual DirectX::XMFLOAT2 gridToParticle(
+		std::vector<DirectX::XMFLOAT2>& oldvel,
+		DirectX::XMFLOAT2 particlePos, DirectX::XMFLOAT2 vel_dt,
+		std::vector<DirectX::XMFLOAT2>& gridPos,
+		std::vector<STATE>& gridState) = 0;
+
 	void setGridVelocity(
 		std::vector<DirectX::XMFLOAT2>& gridVel,
 		std::vector<DirectX::XMFLOAT2>& oldVel,

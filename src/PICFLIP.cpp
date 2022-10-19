@@ -169,8 +169,15 @@ void PICFLIP::_updateParticlePos()
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
-		XMFLOAT2 _picVel = gridToParticle(_particlePosition[i], _gridVelocity);
-		XMFLOAT2 _flipVel = _particleVelocity[i] + gridToParticle(_particlePosition[i], _oldVel);
+		XMFLOAT2 _picVel =			// Current Velocity
+			_interp->gridToParticle(_gridVelocity, 
+				_particlePosition[i], (_particleVelocity[i] * dt),
+				_gridPosition, _gridState);
+		XMFLOAT2 _flipVel = 
+			_particleVelocity[i]	// Previous Velocity
+			+ _interp->gridToParticle(_oldVel,
+				_particlePosition[i], (_particleVelocity[i] * dt), 
+				_gridPosition, _gridState);
 
 		// PIC/FLIP blending
 		_particleVelocity[i] = _picVel * (1 - _flipRatio) + _flipVel * _flipRatio;
