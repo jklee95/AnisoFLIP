@@ -1,5 +1,7 @@
 #pragma once
 #include "GridLiquid.h"
+#include "Interpolation.h"
+#include "Linear.h"
 
 class PICFLIP : public GridLiquid
 {
@@ -10,9 +12,9 @@ public:
 	void setFlipRatio(int value);
 
 private:
+	Interpolation* _interp;
+
 	std::vector<DirectX::XMFLOAT2> _oldVel;
-	std::vector<DirectX::XMFLOAT2> _tempVel;
-	std::vector<float> _pCount;
 
 	float _flipRatio = 0.0f;
 

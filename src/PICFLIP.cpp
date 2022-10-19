@@ -9,10 +9,13 @@ PICFLIP::PICFLIP(int x, int y, EX ex, float timeStep)
 	:GridLiquid(x, y, timeStep)
 {
 	_initialize(ex);
+
+	_interp = new Linear(_INDEX);
 }
 
 PICFLIP::~PICFLIP()
 {
+	delete _interp;
 }
 
 void PICFLIP::setFlipRatio(int value)
@@ -26,8 +29,6 @@ void PICFLIP::_initialize(EX ex)
 
 	size_t vSize = static_cast<size_t>(_gridCount.x) * static_cast<size_t>(_gridCount.y);
 	_oldVel.assign(vSize, { 0.0f, 0.0f });
-	_tempVel.assign(vSize, { 0.0f, 0.0f });
-	_pCount.assign(vSize, 0.0f);
 }
 
 
@@ -56,63 +57,14 @@ void PICFLIP::_advect()
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
-		XMFLOAT2 pos = _particlePosition[i]; 
-		XMFLOAT2 vel = _particleVelocity[i];
-
-		XMINT2 minIndex = _computeCenterMinMaxIndex(VALUE::MIN, pos);
-		XMINT2 maxIndex = _computeCenterMinMaxIndex(VALUE::MAX, pos);
-
-		// Ratio of the Distance.
-		XMFLOAT2 ratio = pos - _gridPosition[_INDEX(minIndex.x, minIndex.y)];
-
-		// Since the grid spacing is 1 (i.e. the difference in distance is between 0 and 1), 
-		// Normalization of the difference is not necessary.
-		float minMinRatio = _gridState[_INDEX(minIndex.x, minIndex.y)] == STATE::LIQUID ? (1.0f - ratio.x) * (1.0f - ratio.y) : 0.0f;
-		float minMaxRatio = _gridState[_INDEX(minIndex.x, maxIndex.y)] == STATE::LIQUID ? (1.0f - ratio.x) * ratio.y : 0.0f;
-		float maxMinRatio = _gridState[_INDEX(maxIndex.x, minIndex.y)] == STATE::LIQUID ? ratio.x * (1.0f - ratio.y) : 0.0f;
-		float maxMaxRatio = _gridState[_INDEX(maxIndex.x, maxIndex.y)] == STATE::LIQUID ? ratio.x * ratio.y : 0.0f;
-
-		// Normalization of the ratio.
-		float totalRatio = minMinRatio + minMaxRatio + maxMinRatio + maxMaxRatio;
-		if (totalRatio > FLT_EPSILON)
-		{
-			minMinRatio /= totalRatio;
-			minMaxRatio /= totalRatio;
-			maxMinRatio /= totalRatio;
-			maxMaxRatio /= totalRatio;
-		}
-
-		// Count the number of particles affecting _INDEX(i, j).
-		_pCount[_INDEX(minIndex.x, minIndex.y)] += minMinRatio;
-		_pCount[_INDEX(minIndex.x, maxIndex.y)] += minMaxRatio;
-		_pCount[_INDEX(maxIndex.x, minIndex.y)] += maxMinRatio;
-		_pCount[_INDEX(maxIndex.x, maxIndex.y)] += maxMaxRatio;
-
-		// Add the velocity multiplied by the ratio.
-		_tempVel[_INDEX(minIndex.x, minIndex.y)] += vel * minMinRatio;
-		_tempVel[_INDEX(minIndex.x, maxIndex.y)] += vel * minMaxRatio;
-		_tempVel[_INDEX(maxIndex.x, minIndex.y)] += vel * maxMinRatio;
-		_tempVel[_INDEX(maxIndex.x, maxIndex.y)] += vel * maxMaxRatio;
+		_interp->particleToGrid(_particlePosition[i], _particleVelocity[i], _timeStep, _gridPosition, _gridState);
 	}
 
 	for (int j = 0; j < _gridCount.y; j++)
 	{
 		for (int i = 0; i < _gridCount.x; i++)
 		{
-
-			if (_pCount[_INDEX(i, j)] > FLT_EPSILON)
-			{
-				// Average
-				_gridVelocity[_INDEX(i, j)] = _oldVel[_INDEX(i, j)] = _tempVel[_INDEX(i, j)] / (_pCount[_INDEX(i, j)]);
-			}
-			else
-			{
-				_gridVelocity[_INDEX(i, j)] = _oldVel[_INDEX(i, j)] = { 0.0f, 0.0f };
-			}
-
-			// Reset
-			_tempVel[_INDEX(i, j)] = { 0.0f, 0.0f };
-			_pCount[_INDEX(i, j)] = 0.0f;
+			_interp->setGridVelocity(_gridVelocity, _oldVel, i, j);
 		}
 	}
 }

@@ -11,6 +11,8 @@ GridLiquid::GridLiquid(int x, int y, float timeStep)
 	_gridCount.x = x + 2; // 2 are boundaries.
 	_gridCount.y = y + 2;
 
+	_INDEX.gridCount = _gridCount;
+
 	_particleCount = 3;
 	_timeStep = timeStep;
 }

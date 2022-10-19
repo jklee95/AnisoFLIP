@@ -34,8 +34,7 @@ protected:
 	std::vector<Vertex> _vertices; 
 	std::vector<unsigned int> _indices;
 
-
-	inline int _INDEX(int i, int j) { return (i + _gridCount.x * j); };
+	GridData _INDEX;
 
 	// Grid
 	std::vector<STATE> _gridState;
