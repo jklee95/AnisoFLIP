@@ -5,7 +5,7 @@ using namespace std;
 using namespace DXViewer::xmfloat2;
 using namespace DXViewer::xmint2;
 
-Interpolation::Interpolation(GridData INDEX)
+Interpolation::Interpolation(GridData& INDEX)
 	:_INDEX(INDEX)
 {
 	size_t vSize = static_cast<size_t>(INDEX.gridCount.x) * static_cast<size_t>(INDEX.gridCount.y);

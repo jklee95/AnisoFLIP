@@ -4,7 +4,7 @@ using namespace DirectX;
 using namespace std;
 using namespace DXViewer::xmfloat2;
 
-CubicSpline::CubicSpline(GridData INDEX)
+CubicSpline::CubicSpline(GridData& INDEX)
 	:Interpolation(INDEX)
 {
 }

@@ -4,7 +4,7 @@ using namespace DirectX;
 using namespace std;
 using namespace DXViewer::xmfloat2;
 
-Anisotropic::Anisotropic(GridData INDEX)
+Anisotropic::Anisotropic(GridData& INDEX)
 	:Interpolation(INDEX)
 {
 }

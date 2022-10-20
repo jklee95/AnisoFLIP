@@ -4,7 +4,7 @@
 class SemiLagrangian : public Interpolation
 {
 public:
-	SemiLagrangian(GridData INDEX);
+	SemiLagrangian(GridData& INDEX);
 	~SemiLagrangian();
 
 	void particleToGrid(

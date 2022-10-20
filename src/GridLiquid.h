@@ -5,16 +5,14 @@
 
 #include "gridsimheader.h"
 #include "Interpolation.h"
-#include "SemiLagrangian.h"
-#include "Linear.h"
-#include "CubicSpline.h"
-#include "Anisotropic.h"
 
 class GridLiquid
 {
 public:
-	GridLiquid(int x, int y, float timeStep);
+	GridLiquid(int x, int y, float timeStep, GridData& index);
 	virtual ~GridLiquid();
+
+	void setInterp(Interpolation* interp);
 
 #pragma region Implementation
 	// ################################## Implementation ####################################
@@ -41,7 +39,7 @@ protected:
 	std::vector<Vertex> _vertices; 
 	std::vector<unsigned int> _indices;
 
-	GridData _INDEX;
+	GridData& _INDEX;
 
 	// Grid
 	std::vector<STATE> _gridState;

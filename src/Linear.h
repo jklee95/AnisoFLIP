@@ -4,7 +4,7 @@
 class Linear : public Interpolation
 {
 public:
-	Linear(GridData INDEX);
+	Linear(GridData& INDEX);
 	~Linear();
 
 	void particleToGrid(

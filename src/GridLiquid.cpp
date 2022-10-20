@@ -6,12 +6,10 @@ using namespace std;
 using namespace DXViewer::xmfloat2;
 using namespace DXViewer::xmint2;
 
-GridLiquid::GridLiquid(int x, int y, float timeStep)
+GridLiquid::GridLiquid(int x, int y, float timeStep, GridData& index)
+	:_INDEX(index)
 {
-	_gridCount.x = x + 2; // 2 are boundaries.
-	_gridCount.y = y + 2;
-
-	_INDEX.gridCount = _gridCount;
+	_gridCount = index.gridCount;
 
 	_particleCount = 3;
 	_timeStep = timeStep;
@@ -19,7 +17,11 @@ GridLiquid::GridLiquid(int x, int y, float timeStep)
 
 GridLiquid::~GridLiquid()
 {
-	delete _interp;
+}
+
+void GridLiquid::setInterp(Interpolation* interp)
+{
+	_interp = interp;
 }
 
 void GridLiquid::_initialize(EX ex)

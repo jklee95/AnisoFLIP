@@ -4,7 +4,7 @@ using namespace DirectX;
 using namespace std;
 using namespace DXViewer::xmfloat2;
 
-Linear::Linear(GridData INDEX)
+Linear::Linear(GridData& INDEX)
 	:Interpolation(INDEX)
 {
 }

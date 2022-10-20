@@ -7,8 +7,22 @@ using namespace std;
 
 LiquidManager::LiquidManager(int x, int y, float timeStep)
 {
-	_sim.push_back(new Eulerian(x, y, _ex, timeStep));
-	_sim.push_back(new PICFLIP(x, y, _ex, timeStep));
+	_index.gridCount = { x + 2, y + 2 }; // 2 are boundaries.
+
+	_sim.push_back(new Eulerian(x, y, _ex, timeStep, _index));
+	_sim.push_back(new PICFLIP(x, y, _ex, timeStep, _index));
+
+	_interp.push_back(new SemiLagrangian(_index));
+	_interp.push_back(new Linear(_index));
+	_interp.push_back(new CubicSpline(_index));
+	_interp.push_back(new Anisotropic(_index));
+
+	// 0 : Eulerian
+	// 1 : PIC/FLIP
+	_simIndex = 1;
+
+	_sim[0]->setInterp(_interp[0]);
+	_sim[1]->setInterp(_interp[1]);
 }
 
 LiquidManager::~LiquidManager()
@@ -16,6 +30,11 @@ LiquidManager::~LiquidManager()
 	for (auto& sim : _sim)
 	{
 		delete sim;
+	}
+
+	for (auto& interp : _interp)
+	{
+		delete interp;
 	}
 }
 

@@ -7,6 +7,11 @@
 // These include GridLiquid.h.
 #include "Eulerian.h"
 #include "PICFLIP.h"
+#include "Interpolation.h"
+#include "SemiLagrangian.h"
+#include "Linear.h"
+#include "CubicSpline.h"
+#include "Anisotropic.h"
 
 class LiquidManager : public ISimulation
 {
@@ -50,9 +55,17 @@ public:
 
 private:
 	std::vector<GridLiquid*> _sim;
+	std::vector<Interpolation*> _interp;
 
-	// 0 is Eulerian, 1 is PIC/FLIP
-	int _simIndex = 1;
+	// 0 : Eulerian
+	// 1 : PIC/FLIP
+	int _simIndex = 0;
+
+	// 0 : Linear
+	// 1 : Cubic
+	// 2 : Aniso
+	int _interpIdx = 0;
+
 	int _scrollPos = 99;
 
 	DX12App* _dxapp = nullptr;
@@ -75,6 +88,7 @@ private:
 	int _simFrame = 0;
 
 	EX _ex = EX::DROP;
+	GridData _index;
 
 	void _setDrawFlag(FLAG flagType, bool flag);
 	bool _getDrawFlag(FLAG flagType);

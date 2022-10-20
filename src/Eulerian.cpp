@@ -5,12 +5,10 @@ using namespace std;
 using namespace DXViewer::xmfloat2;
 using namespace DXViewer::xmint2;
 
-Eulerian::Eulerian(int x, int y, EX ex, float timeStep)
-	:GridLiquid(x, y, timeStep)
+Eulerian::Eulerian(int x, int y, EX ex, float timeStep, GridData& index)
+	:GridLiquid(x, y, timeStep, index)
 {
 	_initialize(ex);
-
-	_interp = new SemiLagrangian(_INDEX);
 }
 
 Eulerian::~Eulerian()

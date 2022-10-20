@@ -12,10 +12,17 @@ inline DirectX::XMFLOAT2 operator*(DirectX::XMFLOAT2 vec, DirectX::XMFLOAT4X4 ma
 	};
 }
 
+inline float f2_length(DirectX::XMFLOAT2 f1)
+{
+	return sqrtf(f1.x * f1.x + f1.y * f1.y);
+}
+
+
+
 class Anisotropic : public Interpolation
 {
 public:
-	Anisotropic(GridData INDEX);
+	Anisotropic(GridData& INDEX);
 	~Anisotropic();
 
 	void particleToGrid(
@@ -34,11 +41,6 @@ private:
 	void _computeInverseRotScale(
 		DirectX::XMFLOAT4X4* rotM, DirectX::XMFLOAT4X4* scaleM, 
 		DirectX::XMFLOAT2 vel);
-
-	inline float f2_length(DirectX::XMFLOAT2 f1)
-	{
-		return sqrtf(f1.x * f1.x + f1.y * f1.y);
-	}
 
 };
 

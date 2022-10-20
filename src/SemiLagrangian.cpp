@@ -3,7 +3,7 @@ using namespace DirectX;
 using namespace std;
 using namespace DXViewer::xmfloat2;
 
-SemiLagrangian::SemiLagrangian(GridData INDEX)
+SemiLagrangian::SemiLagrangian(GridData& INDEX)
 	:Interpolation(INDEX)
 {
 }

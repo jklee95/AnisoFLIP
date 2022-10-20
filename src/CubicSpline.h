@@ -4,7 +4,7 @@
 class CubicSpline : public Interpolation
 {
 public:
-	CubicSpline(GridData INDEX);
+	CubicSpline(GridData& INDEX);
 	~CubicSpline();
 
 	void particleToGrid(

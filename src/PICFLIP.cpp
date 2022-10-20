@@ -5,12 +5,10 @@ using namespace std;
 using namespace DXViewer::xmfloat2;
 using namespace DXViewer::xmint2;
 
-PICFLIP::PICFLIP(int x, int y, EX ex, float timeStep)
-	:GridLiquid(x, y, timeStep)
+PICFLIP::PICFLIP(int x, int y, EX ex, float timeStep, GridData& index)
+	:GridLiquid(x, y, timeStep, index)
 {
 	_initialize(ex);
-
-	_interp = new Anisotropic(_INDEX);
 }
 
 PICFLIP::~PICFLIP()

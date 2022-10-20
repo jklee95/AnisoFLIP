@@ -4,7 +4,7 @@
 class PICFLIP : public GridLiquid
 {
 public:
-	PICFLIP(int x, int y, EX ex, float timeStep);
+	PICFLIP(int x, int y, EX ex, float timeStep, GridData& index);
 	~PICFLIP() override;
 
 	void setFlipRatio(int value);
