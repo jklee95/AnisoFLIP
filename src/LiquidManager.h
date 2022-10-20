@@ -77,6 +77,7 @@ private:
 		EX_GROUP, DAM_RADIO, DROP_RADIO,
 		SOLVER_GROUP, EULERIAN_RADIO, PICFLIP_RADIO,
 		RATIO_BAR, PIC_TEXT, PIC_RATIO, FLIP_TEXT, FLIP_RATIO,
+		INTERP_GROUP, LINEAR_RADIO, CUBIC_RADIO, ANISO_RADIO,
 		TIME_TEXT, FRAME_TEXT
 	};
 
@@ -92,5 +93,7 @@ private:
 
 	void _setDrawFlag(FLAG flagType, bool flag);
 	bool _getDrawFlag(FLAG flagType);
+
+	void _setSimInterp(int interpIndex);
 };
 

@@ -50,6 +50,11 @@ bool LiquidManager::_getDrawFlag(FLAG flagType)
 	return _drawFlag[i];
 }
 
+void LiquidManager::_setSimInterp(int interpIndex)
+{
+	_sim[1]->setInterp(_interp[interpIndex]);
+}
+
 #pragma region Implementation
 // ################################## Implementation ####################################
 // Simulation methods
@@ -179,26 +184,35 @@ void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 		CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
 			40, 250, 200, 20, hwnd, reinterpret_cast<HMENU>(COM::RATIO_BAR), hInstance, NULL);
 
+	CreateWindow(L"button", L"Interpolation", WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+		30, 280, 220, 50, hwnd, reinterpret_cast<HMENU>(COM::INTERP_GROUP), hInstance, NULL);
+	CreateWindow(L"button", L"Linear", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON | WS_GROUP,
+		45, 296, 60, 25, hwnd, reinterpret_cast<HMENU>(COM::LINEAR_RADIO), hInstance, NULL);
+	CreateWindow(L"button", L"Cubic", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
+		115, 296, 60, 25, hwnd, reinterpret_cast<HMENU>(COM::CUBIC_RADIO), hInstance, NULL);
+	CreateWindow(L"button", L"Aniso", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
+		180, 296, 60, 25, hwnd, reinterpret_cast<HMENU>(COM::ANISO_RADIO), hInstance, NULL);
+
 	CreateWindow(L"button", _updateFlag ? L"¡«" : L"¢º", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-		65, 290, 50, 25, hwnd, reinterpret_cast<HMENU>(COM::PLAY), hInstance, NULL);
+		65, 350, 50, 25, hwnd, reinterpret_cast<HMENU>(COM::PLAY), hInstance, NULL);
 	CreateWindow(L"button", L"¡á", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-		115, 290, 50, 25, hwnd, reinterpret_cast<HMENU>(COM::STOP), hInstance, NULL);
+		115, 350, 50, 25, hwnd, reinterpret_cast<HMENU>(COM::STOP), hInstance, NULL);
 	CreateWindow(L"button", L"¢ºl", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-		165, 290, 50, 25, hwnd, reinterpret_cast<HMENU>(COM::NEXTSTEP), hInstance, NULL);
+		165, 350, 50, 25, hwnd, reinterpret_cast<HMENU>(COM::NEXTSTEP), hInstance, NULL);
 
 	CreateWindow(L"static", L"time :", WS_CHILD | WS_VISIBLE,
-		95, 340, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+		95, 390, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
 	CreateWindow(L"static", to_wstring(_simTime).c_str(), WS_CHILD | WS_VISIBLE,
-		140, 340, 40, 20, hwnd, reinterpret_cast<HMENU>(COM::TIME_TEXT), hInstance, NULL);
+		140, 390, 40, 20, hwnd, reinterpret_cast<HMENU>(COM::TIME_TEXT), hInstance, NULL);
 	CreateWindow(L"static", L"frame :", WS_CHILD | WS_VISIBLE,
-		86, 360, 45, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+		86, 410, 45, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
 	CreateWindow(L"static", to_wstring(_simFrame).c_str(), WS_CHILD | WS_VISIBLE,
-		140, 360, 40, 20, hwnd, reinterpret_cast<HMENU>(COM::FRAME_TEXT), hInstance, NULL);
+		140, 410, 40, 20, hwnd, reinterpret_cast<HMENU>(COM::FRAME_TEXT), hInstance, NULL);
 
-
-	CheckRadioButton(hwnd, static_cast<int>(COM::DAM_RADIO), static_cast<int>(COM::DROP_RADIO), 
+	// Example
+	CheckRadioButton(hwnd, static_cast<int>(COM::DAM_RADIO), static_cast<int>(COM::DROP_RADIO),
 		(_ex == EX::DAM) ? static_cast<int>(COM::DAM_RADIO) : static_cast<int>(COM::DROP_RADIO));
-	CheckRadioButton(hwnd, static_cast<int>(COM::EULERIAN_RADIO), static_cast<int>(COM::PICFLIP_RADIO), 
+	CheckRadioButton(hwnd, static_cast<int>(COM::EULERIAN_RADIO), static_cast<int>(COM::PICFLIP_RADIO),
 		(_simIndex == 0) ? static_cast<int>(COM::EULERIAN_RADIO) : static_cast<int>(COM::PICFLIP_RADIO));
 
 	if (_updateFlag)
@@ -206,6 +220,7 @@ void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 		EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::NEXTSTEP)), false);
 	}
 
+	// If the simulation is Eulerian, scroll bar and interpolation group are disabled.
 	if (_simIndex == 0)
 	{
 		EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::RATIO_BAR)), false);
@@ -213,8 +228,15 @@ void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 		EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::PIC_RATIO)), false);
 		EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::FLIP_TEXT)), false);
 		EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::FLIP_RATIO)), false);
+
+		// Disable the Interpolation group.
+		EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::INTERP_GROUP)), false);
+		EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::LINEAR_RADIO)), false);
+		EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::CUBIC_RADIO)), false);
+		EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::ANISO_RADIO)), false);
 	}
 
+	// Scroll bar
 	SetScrollRange(scroll, SB_CTL, 0, 100, TRUE);
 	SetScrollPos(scroll, SB_CTL, _scrollPos, TRUE);
 	dynamic_cast<PICFLIP*>(_sim[1])->setFlipRatio(_scrollPos);
@@ -301,11 +323,18 @@ void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 			_simIndex = 0;
 			_dxapp->resetSimulationState();
 
+			// Disable the FLIP ratio scroll bar.
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::RATIO_BAR)), false);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::PIC_TEXT)), false);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::PIC_RATIO)), false);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::FLIP_TEXT)), false);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::FLIP_RATIO)), false);
+
+			// Disable the Interpolation group.
+			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::INTERP_GROUP)), false);
+			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::LINEAR_RADIO)), false);
+			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::CUBIC_RADIO)), false);
+			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::ANISO_RADIO)), false);
 		}
 		break;
 		case static_cast<int>(COM::PICFLIP_RADIO) :
@@ -313,13 +342,45 @@ void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 			_simIndex = 1;
 			_dxapp->resetSimulationState();
 
+			// Enable the FLIP ratio scroll bar.
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::RATIO_BAR)), true);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::PIC_TEXT)), true);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::PIC_RATIO)), true);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::FLIP_TEXT)), true);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::FLIP_RATIO)), true);
+
+			// Enable the Interpolation group.
+			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::INTERP_GROUP)), true);
+			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::LINEAR_RADIO)), true);
+			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::CUBIC_RADIO)), true);
+			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::ANISO_RADIO)), true);
 		}
 		break;
+		// #####################
+
+		// #####################
+
+		// ### Interpolation radio buttons ###
+		case static_cast<int>(COM::LINEAR_RADIO):
+		{
+			_dxapp->resetSimulationState();
+			_setSimInterp(1); // 0 is Semi-Lagrangian
+		}
+		break;
+		case static_cast<int>(COM::CUBIC_RADIO):
+		{
+			_dxapp->resetSimulationState();
+			_setSimInterp(2);
+		}
+		break;
+
+		case static_cast<int>(COM::ANISO_RADIO):
+		{
+			_dxapp->resetSimulationState();
+			_setSimInterp(3);
+		}
+		break;
+
 		// #####################
 	}
 }
