@@ -312,61 +312,6 @@ XMINT2 GridLiquid::_computeFaceMinMaxIndex(VALUE vState, XMFLOAT2 particlePos)
 	return { static_cast<int>(floor(value.x)), static_cast<int>(floor(value.y)) };
 }
 
-// _updateParticlePosition() uses the center. (center-type velocity storage)
-XMINT2 GridLiquid::_computeCenterMinMaxIndex(VALUE vState, XMFLOAT2 particlePos)
-{
-	switch (vState)
-	{
-	case VALUE::MIN:
-		return { static_cast<int>(floor(particlePos.x)), static_cast<int>(floor(particlePos.y)) };
-		break;
-	case VALUE::MAX:
-		return { static_cast<int>(ceil(particlePos.x)), static_cast<int>(ceil(particlePos.y)) };
-		break;
-	default:
-		return { -1, -1 };
-		break;
-	}
-}
-
-																	// For semi-Lagrangian and FLIP
-XMFLOAT2 GridLiquid::gridToParticle(XMFLOAT2 particlePos, vector<XMFLOAT2>& oldVel)
-{
-	XMFLOAT2 pos = particlePos;
-
-	XMINT2 minIndex = _computeCenterMinMaxIndex(VALUE::MIN, pos);
-	XMINT2 maxIndex = _computeCenterMinMaxIndex(VALUE::MAX, pos);
-
-	XMFLOAT2 ratio = (pos - _gridPosition[_INDEX(minIndex.x, minIndex.y)]);
-
-	float minMinRatio = _gridState[_INDEX(minIndex.x, minIndex.y)] == STATE::LIQUID ? (1.0f - ratio.x) * (1.0f - ratio.y) : 0.0f;
-	float minMaxRatio = _gridState[_INDEX(minIndex.x, maxIndex.y)] == STATE::LIQUID ? (1.0f - ratio.x) * ratio.y : 0.0f;
-	float maxMinRatio = _gridState[_INDEX(maxIndex.x, minIndex.y)] == STATE::LIQUID ? ratio.x * (1.0f - ratio.y) : 0.0f;
-	float maxMaxRatio = _gridState[_INDEX(maxIndex.x, maxIndex.y)] == STATE::LIQUID ? ratio.x * ratio.y : 0.0f;
-
-	// Normalization
-	float totalRatio = minMinRatio + minMaxRatio + maxMinRatio + maxMaxRatio;
-	if (totalRatio > FLT_EPSILON)
-	{
-		minMinRatio /= totalRatio;
-		minMaxRatio /= totalRatio;
-		maxMinRatio /= totalRatio;
-		maxMaxRatio /= totalRatio;
-	}
-
-	XMFLOAT2 minMinVel = oldVel[_INDEX(minIndex.x, minIndex.y)];
-	XMFLOAT2 minMaxVel = oldVel[_INDEX(minIndex.x, maxIndex.y)];
-	XMFLOAT2 maxMinVel = oldVel[_INDEX(maxIndex.x, minIndex.y)];
-	XMFLOAT2 maxMaxVel = oldVel[_INDEX(maxIndex.x, maxIndex.y)];
-
-	return
-		minMinVel * minMinRatio + minMaxVel * minMaxRatio
-		+ maxMinVel * maxMinRatio + maxMaxVel * maxMaxRatio;
-
-}
-
-
-
 XMFLOAT4 GridLiquid::_getGridColor(int i)
 {
 	switch (_gridState[i])

@@ -30,6 +30,7 @@ void Interpolation::setGridVelocity(vector<XMFLOAT2>& gridVel, vector<XMFLOAT2>&
 	_pCount[_INDEX(i, j)] = 0.0f;
 }
 
+// Center-type velocity storage
 XMINT2 Interpolation::_computeCenterMinMaxIndex(VALUE vState, XMFLOAT2 particlePos)
 {
 	switch (vState)

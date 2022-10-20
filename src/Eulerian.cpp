@@ -9,6 +9,8 @@ Eulerian::Eulerian(int x, int y, EX ex, float timeStep)
 	:GridLiquid(x, y, timeStep)
 {
 	_initialize(ex);
+
+	_interp = new SemiLagrangian(_INDEX);
 }
 
 Eulerian::~Eulerian()
@@ -84,7 +86,8 @@ void Eulerian::_advect()
 				else if (backPos.y < yMin) backPos.y = yMin;
 
 				// Semi Largrangian
-				_gridVelocity[_INDEX(i, j)] = gridToParticle(backPos, oldVelocity);
+				_gridVelocity[_INDEX(i, j)] = _interp->gridToParticle(oldVelocity, backPos, 
+					{ 0.0f, 0.0f }, _gridPosition, _gridState);
 			}
 			
 		}
@@ -165,7 +168,8 @@ void Eulerian::_updateParticlePos()
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
-		_particleVelocity[i] = gridToParticle(_particlePosition[i], _gridVelocity);
+		_particleVelocity[i] = _interp->gridToParticle(_gridVelocity,
+			_particlePosition[i], { 0.0f, 0.0f }, _gridPosition, _gridState);
 		_particlePosition[i] += _particleVelocity[i] * dt;
 
 		// Boundary condition

@@ -4,6 +4,9 @@
 #include <algorithm>
 
 #include "gridsimheader.h"
+#include "Interpolation.h"
+#include "SemiLagrangian.h"
+#include "Linear.h"
 
 class GridLiquid
 {
@@ -31,6 +34,8 @@ public:
 	// #######################################################################################
 
 protected:
+	Interpolation* _interp;
+
 	std::vector<Vertex> _vertices; 
 	std::vector<unsigned int> _indices;
 
@@ -69,8 +74,5 @@ protected:
 	// ---
 
 	DirectX::XMINT2 _computeFaceMinMaxIndex(VALUE vState, DirectX::XMFLOAT2 particlePos);
-	DirectX::XMINT2 _computeCenterMinMaxIndex(VALUE vState, DirectX::XMFLOAT2 particlePos);
-
-	DirectX::XMFLOAT2 gridToParticle(DirectX::XMFLOAT2 particlePos, std::vector<DirectX::XMFLOAT2>& oldvel);
 };
 
