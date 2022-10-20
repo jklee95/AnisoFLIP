@@ -28,7 +28,14 @@ protected:
 	GridData _INDEX;
 	std::vector<DirectX::XMFLOAT2> _tempVel;
 	std::vector<float> _pCount;
+	std::vector<float> _weights;
 
+	DirectX::XMINT2 _computeIndexRange(DirectX::XMFLOAT2 pos, VALUE vState, float amount);
 	DirectX::XMINT2 _computeCenterMinMaxIndex(VALUE vState, DirectX::XMFLOAT2 particlePos);
+
+	inline DirectX::XMFLOAT2 f2_fabsf(DirectX::XMFLOAT2 f1)
+	{
+		return DirectX::XMFLOAT2(fabsf(f1.x), fabsf(f1.y));
+	}
 };
 

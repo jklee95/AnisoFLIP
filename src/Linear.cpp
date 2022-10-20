@@ -9,6 +9,7 @@ Linear::Linear(GridData INDEX)
 	size_t vSize = static_cast<size_t>(INDEX.gridCount.x) * static_cast<size_t>(INDEX.gridCount.y);
 	_tempVel.assign(vSize, { 0.0f, 0.0f });
 	_pCount.assign(vSize, 0.0f);
+	_weights.assign(vSize, 0.0f);
 }
 
 Linear::~Linear()
@@ -20,77 +21,87 @@ void Linear::particleToGrid(XMFLOAT2 particlePos, XMFLOAT2 particleVel,
 	float dt, vector<XMFLOAT2>& gridPos, vector<STATE>& gridState)
 {
 	XMFLOAT2 pos = particlePos;
-	XMFLOAT2 vel = particleVel;
+	XMINT2 minIndex = _computeIndexRange(pos, VALUE::MIN, 2.0f);
+	XMINT2 maxIndex = _computeIndexRange(pos, VALUE::MAX, 2.0f);
 
-	XMINT2 minIndex = _computeCenterMinMaxIndex(VALUE::MIN, pos);
-	XMINT2 maxIndex = _computeCenterMinMaxIndex(VALUE::MAX, pos);
+	float sum = 0.0f;
 
-	// Ratio of the Distance.
-	XMFLOAT2 ratio = pos - gridPos[_INDEX(minIndex.x, minIndex.y)];
-
-	// Since the grid spacing is 1 (i.e. the difference in distance is between 0 and 1), 
-	// Normalization of the difference is not necessary.
-	float minMinRatio = gridState[_INDEX(minIndex.x, minIndex.y)] == STATE::LIQUID ? (1.0f - ratio.x) * (1.0f - ratio.y) : 0.0f;
-	float minMaxRatio = gridState[_INDEX(minIndex.x, maxIndex.y)] == STATE::LIQUID ? (1.0f - ratio.x) * ratio.y : 0.0f;
-	float maxMinRatio = gridState[_INDEX(maxIndex.x, minIndex.y)] == STATE::LIQUID ? ratio.x * (1.0f - ratio.y) : 0.0f;
-	float maxMaxRatio = gridState[_INDEX(maxIndex.x, maxIndex.y)] == STATE::LIQUID ? ratio.x * ratio.y : 0.0f;
-
-	// Normalization of the ratio.
-	float totalRatio = minMinRatio + minMaxRatio + maxMinRatio + maxMaxRatio;
-	if (totalRatio > FLT_EPSILON)
+	for (int i = minIndex.x; i <= maxIndex.x; i++)
 	{
-		minMinRatio /= totalRatio;
-		minMaxRatio /= totalRatio;
-		maxMinRatio /= totalRatio;
-		maxMaxRatio /= totalRatio;
+		for (int j = minIndex.y; j <= maxIndex.y; j++)
+		{
+			XMFLOAT2 dist = f2_fabsf(pos - gridPos[_INDEX(i, j)]);
+
+			float weightX = _linearSpline(dist.x);
+			float weightY = _linearSpline(dist.y);
+			float weight = gridState[_INDEX(i, j)] == STATE::LIQUID ? weightX * weightY : 0.0f;
+
+			_weights[_INDEX(i, j)] = weight;
+
+			sum += weight;
+		}
 	}
 
-	// Count the number of particles affecting _INDEX(i, j).
-	_pCount[_INDEX(minIndex.x, minIndex.y)] += minMinRatio;
-	_pCount[_INDEX(minIndex.x, maxIndex.y)] += minMaxRatio;
-	_pCount[_INDEX(maxIndex.x, minIndex.y)] += maxMinRatio;
-	_pCount[_INDEX(maxIndex.x, maxIndex.y)] += maxMaxRatio;
 
-	// Add the velocity multiplied by the ratio.
-	_tempVel[_INDEX(minIndex.x, minIndex.y)] += vel * minMinRatio;
-	_tempVel[_INDEX(minIndex.x, maxIndex.y)] += vel * minMaxRatio;
-	_tempVel[_INDEX(maxIndex.x, minIndex.y)] += vel * maxMinRatio;
-	_tempVel[_INDEX(maxIndex.x, maxIndex.y)] += vel * maxMaxRatio;
+	for (int i = minIndex.x; i <= maxIndex.x; i++)
+	{
+		for (int j = minIndex.y; j <= maxIndex.y; j++)
+		{
+
+			_weights[_INDEX(i, j)] /= sum;
+
+			_pCount[_INDEX(i, j)] += _weights[_INDEX(i, j)];
+			_tempVel[_INDEX(i, j)] += particleVel * _weights[_INDEX(i, j)];
+
+			// reset
+			_weights[_INDEX(i, j)] = 0.0f;
+		}
+	}
 }
 
 XMFLOAT2 Linear::gridToParticle(vector<XMFLOAT2>& oldVel, XMFLOAT2 particlePos, 
 	XMFLOAT2 vel_dt, vector<XMFLOAT2>& gridPos, vector<STATE>& gridState)
 {
 	XMFLOAT2 pos = particlePos;
+	XMINT2 minIndex = _computeIndexRange(pos, VALUE::MIN, 2.0f);
+	XMINT2 maxIndex = _computeIndexRange(pos, VALUE::MAX, 2.0f);
 
-	XMINT2 minIndex = _computeCenterMinMaxIndex(VALUE::MIN, pos);
-	XMINT2 maxIndex = _computeCenterMinMaxIndex(VALUE::MAX, pos);
+	float sum = 0.0f;
 
-	XMFLOAT2 ratio = (pos - gridPos[_INDEX(minIndex.x, minIndex.y)]);
-
-	float minMinRatio = gridState[_INDEX(minIndex.x, minIndex.y)] == STATE::LIQUID ? (1.0f - ratio.x) * (1.0f - ratio.y) : 0.0f;
-	float minMaxRatio = gridState[_INDEX(minIndex.x, maxIndex.y)] == STATE::LIQUID ? (1.0f - ratio.x) * ratio.y : 0.0f;
-	float maxMinRatio = gridState[_INDEX(maxIndex.x, minIndex.y)] == STATE::LIQUID ? ratio.x * (1.0f - ratio.y) : 0.0f;
-	float maxMaxRatio = gridState[_INDEX(maxIndex.x, maxIndex.y)] == STATE::LIQUID ? ratio.x * ratio.y : 0.0f;
-
-	// Normalization
-	float totalRatio = minMinRatio + minMaxRatio + maxMinRatio + maxMaxRatio;
-	if (totalRatio > FLT_EPSILON)
+	for (int i = minIndex.x; i <= maxIndex.x; i++)
 	{
-		minMinRatio /= totalRatio;
-		minMaxRatio /= totalRatio;
-		maxMinRatio /= totalRatio;
-		maxMaxRatio /= totalRatio;
+		for (int j = minIndex.y; j <= maxIndex.y; j++)
+		{
+			XMFLOAT2 dist = f2_fabsf(pos - gridPos[_INDEX(i, j)]);
+
+			float weightX = _linearSpline(dist.x);
+			float weightY = _linearSpline(dist.y);
+			float weight = gridState[_INDEX(i, j)] == STATE::LIQUID ? weightX * weightY : 0.0f;
+
+			_weights[_INDEX(i, j)] = weight;
+
+			sum += weight;
+		}
 	}
 
-	XMFLOAT2 minMinVel = oldVel[_INDEX(minIndex.x, minIndex.y)];
-	XMFLOAT2 minMaxVel = oldVel[_INDEX(minIndex.x, maxIndex.y)];
-	XMFLOAT2 maxMinVel = oldVel[_INDEX(maxIndex.x, minIndex.y)];
-	XMFLOAT2 maxMaxVel = oldVel[_INDEX(maxIndex.x, maxIndex.y)];
+	XMFLOAT2 result = { 0.0f , 0.0f };
 
-	return
-		minMinVel * minMinRatio + minMaxVel * minMaxRatio
-		+ maxMinVel * maxMinRatio + maxMaxVel * maxMaxRatio;
+	
+	for (int i = minIndex.x; i <= maxIndex.x; i++)
+	{
+		for (int j = minIndex.y; j <= maxIndex.y; j++)
+		{
+			_weights[_INDEX(i, j)] /= sum;
+
+			XMFLOAT2 vel = oldVel[_INDEX(i, j)];
+			result += vel * _weights[_INDEX(i, j)];
+
+			// reset
+			_weights[_INDEX(i, j)] = 0.0f;
+		}
+	}
+
+	return result;
 }
 
 float Linear::_linearSpline(float x)

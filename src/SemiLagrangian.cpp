@@ -25,8 +25,11 @@ XMFLOAT2 SemiLagrangian::gridToParticle(vector<XMFLOAT2>& oldVel, XMFLOAT2 parti
 	XMINT2 minIndex = _computeCenterMinMaxIndex(VALUE::MIN, pos);
 	XMINT2 maxIndex = _computeCenterMinMaxIndex(VALUE::MAX, pos);
 
+	// Ratio of the Distance.
 	XMFLOAT2 ratio = (pos - gridPos[_INDEX(minIndex.x, minIndex.y)]);
 
+	// Since the grid spacing is 1 (i.e. the difference in distance is between 0 and 1), 
+	// Normalization of the difference is not necessary.
 	float minMinRatio = gridState[_INDEX(minIndex.x, minIndex.y)] == STATE::LIQUID ? (1.0f - ratio.x) * (1.0f - ratio.y) : 0.0f;
 	float minMaxRatio = gridState[_INDEX(minIndex.x, maxIndex.y)] == STATE::LIQUID ? (1.0f - ratio.x) * ratio.y : 0.0f;
 	float maxMinRatio = gridState[_INDEX(maxIndex.x, minIndex.y)] == STATE::LIQUID ? ratio.x * (1.0f - ratio.y) : 0.0f;
@@ -42,12 +45,14 @@ XMFLOAT2 SemiLagrangian::gridToParticle(vector<XMFLOAT2>& oldVel, XMFLOAT2 parti
 		maxMaxRatio /= totalRatio;
 	}
 
+	// Velocity of 4 corners.
 	XMFLOAT2 minMinVel = oldVel[_INDEX(minIndex.x, minIndex.y)];
 	XMFLOAT2 minMaxVel = oldVel[_INDEX(minIndex.x, maxIndex.y)];
 	XMFLOAT2 maxMinVel = oldVel[_INDEX(maxIndex.x, minIndex.y)];
 	XMFLOAT2 maxMaxVel = oldVel[_INDEX(maxIndex.x, maxIndex.y)];
 
 	return
+		// Bilinear interpolation
 		minMinVel * minMinRatio + minMaxVel * minMaxRatio
 		+ maxMinVel * maxMinRatio + maxMaxVel * maxMaxRatio;
 }

@@ -294,7 +294,7 @@ XMINT2 GridLiquid::_computeFaceMinMaxIndex(VALUE vState, XMFLOAT2 particlePos)
 {
 	XMFLOAT2 value;
 
-	// Compute position by normalizing from (-N, N) to (0, N + 1)
+	// Compute the position by normalizing from (-N, N) to (0, N + 1).
 	switch (vState)
 	{
 	case VALUE::MIN:
@@ -308,7 +308,7 @@ XMINT2 GridLiquid::_computeFaceMinMaxIndex(VALUE vState, XMFLOAT2 particlePos)
 		break;
 	}
 
-	// Compute Index
+	// Compute the index.
 	return { static_cast<int>(floor(value.x)), static_cast<int>(floor(value.y)) };
 }
 
@@ -531,7 +531,8 @@ void GridLiquid::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuff
 		constantBuffer[i].world._41 = pos.x;
 		constantBuffer[i].world._42 = pos.y;
 
-	}// Set the velocity field.
+	}
+	// Set the velocity field.
 	else
 	{
 
