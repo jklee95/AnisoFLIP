@@ -7,6 +7,8 @@
 #include "Interpolation.h"
 #include "SemiLagrangian.h"
 #include "Linear.h"
+#include "CubicSpline.h"
+#include "Anisotropic.h"
 
 class GridLiquid
 {

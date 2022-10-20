@@ -8,6 +8,10 @@ using namespace DXViewer::xmint2;
 Interpolation::Interpolation(GridData INDEX)
 	:_INDEX(INDEX)
 {
+	size_t vSize = static_cast<size_t>(INDEX.gridCount.x) * static_cast<size_t>(INDEX.gridCount.y);
+	_tempVel.assign(vSize, { 0.0f, 0.0f });
+	_pCount.assign(vSize, 0.0f);
+	_weights.assign(vSize, 0.0f);
 }
 
 Interpolation::~Interpolation()
@@ -65,4 +69,14 @@ XMINT2 Interpolation::_computeCenterMinMaxIndex(VALUE vState, XMFLOAT2 particleP
 			return { -1, -1 };
 			break;
 	}
+}
+
+float Interpolation::_cubicSpline(float x)
+{
+	if (x >= 0.0f && x < 1.0f)
+		return (0.5f * x * x * x) - (x * x) + 0.666667f;
+	else if (x >= 1.0f && x < 2.0f)
+		return (-0.166667f * x * x * x) + (x * x) - (2.0f * x) + 1.333333f;
+	else
+		return 0.0f;
 }

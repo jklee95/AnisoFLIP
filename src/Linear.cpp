@@ -1,4 +1,5 @@
 #include "Linear.h"
+
 using namespace DirectX;
 using namespace std;
 using namespace DXViewer::xmfloat2;
@@ -6,10 +7,6 @@ using namespace DXViewer::xmfloat2;
 Linear::Linear(GridData INDEX)
 	:Interpolation(INDEX)
 {
-	size_t vSize = static_cast<size_t>(INDEX.gridCount.x) * static_cast<size_t>(INDEX.gridCount.y);
-	_tempVel.assign(vSize, { 0.0f, 0.0f });
-	_pCount.assign(vSize, 0.0f);
-	_weights.assign(vSize, 0.0f);
 }
 
 Linear::~Linear()

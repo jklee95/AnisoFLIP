@@ -10,12 +10,11 @@ PICFLIP::PICFLIP(int x, int y, EX ex, float timeStep)
 {
 	_initialize(ex);
 
-	_interp = new Linear(_INDEX);
+	_interp = new Anisotropic(_INDEX);
 }
 
 PICFLIP::~PICFLIP()
 {
-	delete _interp;
 }
 
 void PICFLIP::setFlipRatio(int value)

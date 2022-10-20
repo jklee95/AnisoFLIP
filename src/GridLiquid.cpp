@@ -19,6 +19,7 @@ GridLiquid::GridLiquid(int x, int y, float timeStep)
 
 GridLiquid::~GridLiquid()
 {
+	delete _interp;
 }
 
 void GridLiquid::_initialize(EX ex)

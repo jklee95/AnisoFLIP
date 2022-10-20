@@ -37,5 +37,7 @@ protected:
 	{
 		return DirectX::XMFLOAT2(fabsf(f1.x), fabsf(f1.y));
 	}
+
+	float _cubicSpline(float x);
 };
 
