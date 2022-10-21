@@ -3,7 +3,8 @@
 AnisoFLIP is a liquid simulation which implements the anisotropic kernel function for FLIP. This simulation is based on <A href="https://github.com/jklee95/GridLiquid2D">GridLiquid2D</A> and is rendered using <A href="https://github.com/jklee95/DXViewer">DXViewer</A>.
 
 ## Method
-Our method does not define a new kernel function, but rather transform the existing kernel in the direction of the velocity. The transformation of a kernel function can be implemented with the following matrix **M**:
+![KernelDeformation](docs/images/KernelDeformation.png)
+Our method does not define a new kernel function, but rather transform the existing kernel in the direction of the velocity. The transformation of a kernel function can be implemented with the following matrix M:
 
 $$
 \textbf{M} = \textbf{TRS}
@@ -34,6 +35,9 @@ $$
     0 & 0 & 0 & 1 
     \end{pmatrix}
 $$
+
+where F and F′ are the foci, v and w are the vectors orthogonal to the velocity u, r is the
+radius of the kernel function, and a, b, c are axes of a spheroid. More details are described in the <A href="https://github.com/jklee95/AnisoFLIP/blob/master/docs/paper.pdf">full paper</A>.
 
 ## Result
 ### Simulation
