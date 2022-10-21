@@ -17,12 +17,10 @@ LiquidManager::LiquidManager(int x, int y, float timeStep)
 	_interp.push_back(new CubicSpline(_index));
 	_interp.push_back(new Anisotropic(_index));
 
-	// 0 : Eulerian
-	// 1 : PIC/FLIP
-	_simIndex = 1;
+	_simIndex = static_cast<int>(SIM::FLIP);
 
-	_sim[0]->setInterp(_interp[0]);
-	_sim[1]->setInterp(_interp[1]);
+	_sim[static_cast<int>(SIM::EULERIAN)]->setInterp(_interp[static_cast<int>(INTERP::SEMI_LAGRANGIAN)]);
+	_sim[static_cast<int>(SIM::FLIP)]->setInterp(_interp[static_cast<int>(INTERP::LINEAR)]);
 }
 
 LiquidManager::~LiquidManager()
@@ -52,7 +50,7 @@ bool LiquidManager::_getDrawFlag(FLAG flagType)
 
 void LiquidManager::_setSimInterp(int interpIndex)
 {
-	_sim[1]->setInterp(_interp[interpIndex]);
+	_sim[static_cast<int>(SIM::FLIP)]->setInterp(_interp[interpIndex]);
 }
 
 #pragma region Implementation
@@ -364,20 +362,20 @@ void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 		case static_cast<int>(COM::LINEAR_RADIO):
 		{
 			_dxapp->resetSimulationState();
-			_setSimInterp(1); // 0 is Semi-Lagrangian
+			_setSimInterp(static_cast<int>(INTERP::LINEAR));
 		}
 		break;
 		case static_cast<int>(COM::CUBIC_RADIO):
 		{
 			_dxapp->resetSimulationState();
-			_setSimInterp(2);
+			_setSimInterp(static_cast<int>(INTERP::CUBIC));
 		}
 		break;
 
 		case static_cast<int>(COM::ANISO_RADIO):
 		{
 			_dxapp->resetSimulationState();
-			_setSimInterp(3);
+			_setSimInterp(static_cast<int>(INTERP::ANISO));
 		}
 		break;
 

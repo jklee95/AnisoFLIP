@@ -54,22 +54,6 @@ public:
 
 
 private:
-	std::vector<GridLiquid*> _sim;
-	std::vector<Interpolation*> _interp;
-
-	// 0 : Eulerian
-	// 1 : PIC/FLIP
-	int _simIndex = 0;
-
-	// 0 : Linear
-	// 1 : Cubic
-	// 2 : Aniso
-	int _interpIdx = 0;
-
-	int _scrollPos = 99;
-
-	DX12App* _dxapp = nullptr;
-
 	enum class COM
 	{
 		GRID_BTN, PARTICLE_BTN, VELOCITY_BTN,
@@ -81,6 +65,31 @@ private:
 		TIME_TEXT, FRAME_TEXT
 	};
 
+	enum class SIM
+	{
+		EULERIAN, FLIP
+	};
+
+	enum class INTERP
+	{
+		SEMI_LAGRANGIAN, LINEAR, CUBIC, ANISO
+	};
+
+
+	std::vector<GridLiquid*> _sim;
+	std::vector<Interpolation*> _interp;
+
+	// 0 : Eulerian
+	// 1 : PIC/FLIP
+	int _simIndex;
+
+	// 0 : Linear
+	// 1 : Cubic
+	// 2 : Aniso
+
+	int _scrollPos = 99;
+
+	DX12App* _dxapp = nullptr;
 					// grid, particle, velocity
 	bool _drawFlag[3] = { true, true, false };
 	bool _updateFlag = true;
