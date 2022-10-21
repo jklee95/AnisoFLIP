@@ -49,7 +49,7 @@ radius of the kernel function, and a, b, c are axes of a spheroid. More details 
 ### Visualization of the vortices
 #### Single water Smashing
 ![SingleSamsh_curl](docs/images/SingleSmash_curl_plot.gif)
-### Double water Smashing
+#### Double water Smashing
 ![DoubleSmash_curl](docs/images/DoubleSmash_curl_plot.gif)
 
 ## Build
