@@ -47,50 +47,87 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 
 	switch (ex)
 	{
-		// Dam Break
-	case EX::DAM:
-		if (i == 0 || i == N.x + 1
-		||  j == 0 || j == N.y + 1)
-		{ 
-			_gridState.push_back(STATE::BOUNDARY); 
-		}
-		else if ((2 < i)
-			&& (i < (N.x + 1) / 2 - offset * 1.5f)
-			&& (2 < j)  
-			&& (j < ((N.y + 1) / 2 + offset * 1.5f)))
-		{
-			_gridState.push_back(STATE::LIQUID);
-		}
-		else 
-		{ 
-			_gridState.push_back(STATE::AIR); 
-		}
+		case EX::SINGLE_SMASH:
+			if (i == 0 || j == 0
+				|| i == N.x + 1 || j == N.y + 1)
+			{
+				_gridState.push_back(STATE::BOUNDARY);
+				_gridVelocity.push_back(XMFLOAT2(0.0f, 0.0f));
+			}
+			else if
+				(
+					(
+						(((N.x + 1) / 2 + offset * 2.0f > i)
+							&& (i > (N.x + 1) / 2 - offset))
 
-		_gridVelocity.push_back(XMFLOAT2(0.0f, 0.0f));
-		break;
+						)
 
-		// Fluid Drop
-	case EX::DROP:
-		if (i == 0 || i == N.x + 1
-		 || j == 0 || j == N.y + 1)
-		{ 
-			_gridState.push_back(STATE::BOUNDARY); 
-		}
-		else if ((N.x + 1) / 2 - offset * 2.3f < i
-			&& (i < (N.x + 1) / 2 + offset * 2.3f)
-			&& ((N.y + 1) / 2 - offset< j)
-			&& (j < (N.y + 1) / 2 + offset * 2.5f))
-		{
-			_gridState.push_back(STATE::LIQUID);
-		}
-		else
-		{
-			_gridState.push_back(STATE::AIR);
-		}
+					&& ((N.y + 1) / 2 - offset * 2.0f < j)
+					&& (j < (N.y + 1) / 2 + offset * 2.0f)
+					)
 
-		_gridVelocity.push_back(XMFLOAT2(0.0f, 0.0f));
-		break;
+			{
+				_gridState.push_back(STATE::LIQUID);
+				_gridVelocity.push_back(XMFLOAT2(-offset * 3.2f, -offset * 1.0f));
+			}
 
+			else
+			{
+				_gridState.push_back(STATE::AIR);
+				_gridVelocity.push_back(XMFLOAT2(0.0f, 0.0f));
+			}
+			break;
+
+		case EX::DOUBLE_SMASH:
+			if (i == 0 || j == 0
+				|| i == N.x + 1 || j == N.y + 1)
+			{
+				_gridState.push_back(STATE::BOUNDARY);
+				_gridVelocity.push_back(XMFLOAT2(0.0f, 0.0f));
+			}
+
+
+			else if
+				(
+					(
+						(((N.x + 1) / 2 + offset > i)
+							&& (i > offset * 3.0f))
+
+						)
+
+					&& (offset < j)
+					&& (j < (N.y + 1) / 2 - offset * 2.0f)
+					)
+
+			{
+				_gridState.push_back(STATE::LIQUID);
+				_gridVelocity.push_back(XMFLOAT2(offset * 0.8f, offset * 5.0f));
+			}
+			else if
+				(
+					(
+						(((N.x + 1) / 2 + offset * 3.0f > i)
+							&& (i > (N.x + 1) / 2)
+
+							)
+
+						&& ((N.y + 1) / 2 + offset * 2.0f) < j)
+					&& (j < (N.y + 1) / 2 + offset * 4.0f)
+
+					)
+
+			{
+				_gridState.push_back(STATE::LIQUID);
+				_gridVelocity.push_back(XMFLOAT2(offset * -1.5f, -offset * 7.0f));
+			}
+
+			else
+			{
+				_gridState.push_back(STATE::AIR);
+				_gridVelocity.push_back(XMFLOAT2(0.0f, 0.0f));
+			}
+
+			break;
 	}
 	
 }

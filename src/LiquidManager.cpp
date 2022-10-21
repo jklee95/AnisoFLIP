@@ -158,10 +158,10 @@ void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 
 	CreateWindow(L"button", L"Example", WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 		30, 100, 220, 50, hwnd, reinterpret_cast<HMENU>(COM::EX_GROUP), hInstance, NULL);
-	CreateWindow(L"button", L"Dam Break", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON | WS_GROUP,
-		45, 117, 100, 25, hwnd, reinterpret_cast<HMENU>(COM::DAM_RADIO), hInstance, NULL);
-	CreateWindow(L"button", L"Fluid Drop", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
-		148, 117, 100, 25, hwnd, reinterpret_cast<HMENU>(COM::DROP_RADIO), hInstance, NULL);
+	CreateWindow(L"button", L"Throw", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON | WS_GROUP,
+		45, 117, 100, 25, hwnd, reinterpret_cast<HMENU>(COM::SINGLE_SMASH_RADIO), hInstance, NULL);
+	CreateWindow(L"button", L"Crash", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
+		148, 117, 100, 25, hwnd, reinterpret_cast<HMENU>(COM::DOUBLE_SMASH_RADIO), hInstance, NULL);
 	
 	CreateWindow(L"button", L"Solver", WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 		30, 160, 220, 50, hwnd, reinterpret_cast<HMENU>(COM::SOLVER_GROUP), hInstance, NULL);
@@ -208,10 +208,12 @@ void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 		140, 410, 40, 20, hwnd, reinterpret_cast<HMENU>(COM::FRAME_TEXT), hInstance, NULL);
 
 	// Example
-	CheckRadioButton(hwnd, static_cast<int>(COM::DAM_RADIO), static_cast<int>(COM::DROP_RADIO),
-		(_ex == EX::DAM) ? static_cast<int>(COM::DAM_RADIO) : static_cast<int>(COM::DROP_RADIO));
+	CheckRadioButton(hwnd, static_cast<int>(COM::SINGLE_SMASH_RADIO), static_cast<int>(COM::DOUBLE_SMASH_RADIO),
+		(_ex == EX::SINGLE_SMASH) ? static_cast<int>(COM::SINGLE_SMASH_RADIO) : static_cast<int>(COM::DOUBLE_SMASH_RADIO));
 	CheckRadioButton(hwnd, static_cast<int>(COM::EULERIAN_RADIO), static_cast<int>(COM::PICFLIP_RADIO),
 		(_simIndex == 0) ? static_cast<int>(COM::EULERIAN_RADIO) : static_cast<int>(COM::PICFLIP_RADIO));
+	CheckRadioButton(hwnd, static_cast<int>(COM::LINEAR_RADIO), static_cast<int>(COM::ANISO_RADIO),
+		static_cast<int>(COM::LINEAR_RADIO));
 
 	if (_updateFlag)
 	{
@@ -301,15 +303,15 @@ void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 		// #####################
 
 		// ### State radio buttons ###
-		case static_cast<int>(COM::DAM_RADIO) :
+		case static_cast<int>(COM::SINGLE_SMASH_RADIO) :
 		{
-			_ex = EX::DAM;
+			_ex = EX::SINGLE_SMASH;
 			_dxapp->resetSimulationState();
 		}
 		break;
-		case static_cast<int>(COM::DROP_RADIO) :
+		case static_cast<int>(COM::DOUBLE_SMASH_RADIO) :
 		{
-			_ex = EX::DROP;
+			_ex = EX::DOUBLE_SMASH;
 			_dxapp->resetSimulationState();
 		}
 		break; 
@@ -318,7 +320,7 @@ void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 		// ### Solver radio buttons ###
 		case static_cast<int>(COM::EULERIAN_RADIO) :
 		{
-			_simIndex = 0;
+			_simIndex = static_cast<int>(SIM::EULERIAN);
 			_dxapp->resetSimulationState();
 
 			// Disable the FLIP ratio scroll bar.
@@ -337,7 +339,7 @@ void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 		break;
 		case static_cast<int>(COM::PICFLIP_RADIO) :
 		{
-			_simIndex = 1;
+			_simIndex = static_cast<int>(SIM::FLIP);
 			_dxapp->resetSimulationState();
 
 			// Enable the FLIP ratio scroll bar.

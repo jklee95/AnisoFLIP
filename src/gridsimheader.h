@@ -6,7 +6,7 @@
 
 enum class FLAG { GRID, PARTICLE, VELOCITY };
 enum class STATE { LIQUID, BOUNDARY, AIR, SURFACE };
-enum class EX { DAM, DROP };
+enum class EX { SINGLE_SMASH, DOUBLE_SMASH };
 enum class VALUE { MIN, MAX };
 
 // GridData is shared by GridLiquid and Interpolation.
