@@ -4,6 +4,7 @@ AnisoFLIP is a liquid simulation which implements the anisotropic kernel functio
 
 ## Method
 ![KernelDeformation](docs/images/KernelDeformation.png)
+
 Our method does not define a new kernel function, but rather transform the existing kernel in the direction of the velocity. The transformation of a kernel function can be implemented with the following matrix M:
 
 $$
