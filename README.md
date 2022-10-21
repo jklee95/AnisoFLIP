@@ -1,6 +1,6 @@
 # AnisoFLIP
 ## Overview
-AnisoFLIP is a liquid simulation which implements the anisotropic kernel function for FLIP. This simulation is based on <A href="https://github.com/jklee95/GridLiquid2D">GridLiquid2D</A> and is rendered using <A href="https://github.com/jklee95/DXViewer">DXViewer</A>.
+AnisoFLIP is a liquid simulation which implements the anisotropic kernel function for FLIP advection. This simulation is based on <A href="https://github.com/jklee95/GridLiquid2D">GridLiquid2D</A> and is rendered using <A href="https://github.com/jklee95/DXViewer">DXViewer</A>.
 
 ## Method
 ![KernelDeformation](docs/images/KernelDeformation.png)
