@@ -41,7 +41,7 @@ where F and F′ are the foci, v and w are the vectors orthogonal to the velocit
 radius of the kernel function, and a, b, c are axes of a spheroid. More details are described in the <A href="https://github.com/jklee95/AnisoFLIP/blob/master/docs/paper.pdf">full paper</A>.
 
 ## Result
-### Simulation
+### 2D Simulation
 #### Single water Smashing
 ![SingleSmash](docs/images/SingleSmash.gif)
 ####  Double water Smashing
@@ -51,6 +51,9 @@ radius of the kernel function, and a, b, c are axes of a spheroid. More details 
 ![SingleSamsh_curl](docs/images/SingleSmash_curl_plot.gif)
 #### Double water Smashing
 ![DoubleSmash_curl](docs/images/DoubleSmash_curl_plot.gif)
+### 3D Simulation
+![3D](docs/images/3D.gif)
+3D Simulation is based on <A href="https://github.com/rlguy/Blender-FLIP-Fluids">FLIP Fluids</A> and is rendered using <A href="https://github.com/blender/blender">Blender</A>.
 
 ## Build
 This repo was developed in the following environment:
